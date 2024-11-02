@@ -1,0 +1,19 @@
+.board {
+  background-color: #f2f2f2;
+}
+
+.button {
+  width: 60px; /* ボタンの幅を変更 */
+  height: 60px; /* ボタンの高さを変更 */
+  font-size: 24px;
+  margin: 5px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(85, 85, 85, 1),
+    rgba(0, 0, 0, 1)
+  );
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
