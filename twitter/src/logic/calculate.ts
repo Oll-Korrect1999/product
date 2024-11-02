@@ -23,6 +23,11 @@ export function calculate(button: string, state: State): State {
     return handleEqualButton(state);
   }
 
+  //少数点かどうか
+  if (isDecimalButton(button)) {
+    return handleDecimalButton(state);
+  }
+
   return state;
 }
 
@@ -33,8 +38,7 @@ export interface State {
   NextClearFlag: boolean; //クリアフラグ
 }
 
-//ここをApp.tsxと連携させればいける気がしている
-function isNumberButton(button: string) {
+const isNumberButton = (button: string) => {
   return (
     button === "0" ||
     button === "1" ||
@@ -47,12 +51,12 @@ function isNumberButton(button: string) {
     button === "8" ||
     button === "9"
   );
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 //////         数値キーを押下した際の状態遷移                     //////
 /////////////////////////////////////////////////////////////////////
-function handleNumberButton(button: string, state: State): State {
+const handleNumberButton = (button: string, state: State) => {
   if (state.NextClearFlag) {
     return {
       current: button,
@@ -78,17 +82,17 @@ function handleNumberButton(button: string, state: State): State {
     operator: state.operator,
     NextClearFlag: false,
   };
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 //////               ボタンが＋か−か*か/かの確認                 //////
 /////////////////////////////////////////////////////////////////////
-function isOperatorButton(button: string) {
+const isOperatorButton = (button: string) => {
   return button === "+" || button === "-" || button === "*" || button === "÷";
-}
+};
 
 //オペレーターボタンが押下されたかの確認
-function handleOperatorButton(button: string, state: State): State {
+const handleOperatorButton = (button: string, state: State) => {
   if (state.operator === null) {
     return {
       current: state.current,
@@ -106,32 +110,32 @@ function handleOperatorButton(button: string, state: State): State {
     operator: button,
     NextClearFlag: true, //＋キーなどを押下された際、数字を消すため
   };
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 //////                   ACかの確認                             //////
 /////////////////////////////////////////////////////////////////////
-function isAllClearButton(button: string) {
+const isAllClearButton = (button: string) => {
   return button === "AC";
-}
+};
 
-function handleAllClearButton(): State {
+const handleAllClearButton = () => {
   return {
     current: "0",
     operand: 0,
     operator: null,
     NextClearFlag: false, //表示内容を全部消す必要はない
   };
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 //////                    =かの確認                             //////
 /////////////////////////////////////////////////////////////////////
-function isEqualButton(button: string) {
+const isEqualButton = (button: string) => {
   return button === "=";
-}
+};
 
-function handleEqualButton(state: State): State {
+const handleEqualButton = (state: State) => {
   if (state.operator === null) {
     //＋キー等が押下されているか確認
     return state;
@@ -144,12 +148,33 @@ function handleEqualButton(state: State): State {
     operator: null,
     NextClearFlag: true, //数字を押下した際は表示内容を消す
   };
-}
+};
+
+/////////////////////////////////////////////////////////////////////
+//////                  少数点かの確認                          //////
+/////////////////////////////////////////////////////////////////////
+const isDecimalButton = (button: string) => {
+  return button === ".";
+};
+
+const handleDecimalButton = (state: State) => {
+  //表示されている数値に少数点が含まれている場合は何もしない
+  //表示されている数値に少数点が含まれていない場合、小数点を付与する
+  if (state.current.indexOf(".") !== -1) {
+    return state;
+  }
+  return {
+    current: state.current + ".",
+    operand: state.operand,
+    operator: state.operator,
+    NextClearFlag: false,
+  };
+};
 
 /////////////////////////////////////////////////////////////////////
 //////                    計算部分                              //////
 /////////////////////////////////////////////////////////////////////
-function operate(state: State): number {
+const operate = (state: State) => {
   const current = parseFloat(state.current); //parseFloat 文字列を浮動小数点数に置き換え
   if (state.operator === "+") {
     return state.operand + current;
@@ -168,4 +193,4 @@ function operate(state: State): number {
   }
 
   return current;
-}
+};
